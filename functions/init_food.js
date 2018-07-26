@@ -16,7 +16,7 @@ module.exports.handler = async function(req, resp, context) {
 async function saveFood(req, resp) {
     const foodData = {
         version: 1,
-        name: req.queries.name,
+        name: req.queries.name || `${common.getOrderFileName()}晚餐`,
         description: req.queries.description || '',
         createdAt: Date.now(),
         atList: req.queries.atList || [],

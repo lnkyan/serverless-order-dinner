@@ -23,7 +23,7 @@ async function renderPage(req, resp) {
     if (foodData) {
         return renderExist(foodData)
     } else {
-        return renderInit(foodData)
+        return renderInit()
     }
 }
 
@@ -58,10 +58,10 @@ function renderExist(foodData) {
     return tpl(template, foodData)
 }
 
-function renderInit(foodData) {
+function renderInit() {
     const template = `
 <html>
 <h1>设置晚餐情况</h1>
 </html>`
-    return tpl(template, foodData)
+    return template
 }
