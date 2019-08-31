@@ -1,4 +1,4 @@
-# serverless-order-dinner
+# serverless-order-dinner（开了个头然后就烂尾了。。 ）
 基于无服务架构做的钉钉点餐工具。用来发布和记录公司每天免费晚餐的点餐情况
 
 - 语言是Node.js
