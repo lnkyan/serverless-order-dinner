@@ -18,7 +18,7 @@ function getOssClient() {
             accessKeyId: config.ACCESS_KEY_ID,
             accessKeySecret: config.ACCESS_KEY_SECRET,
             bucket: config.OSS_BUCKET,
-            timeout: 10000
+            timeout: 10000,
         })
     }
     return client
@@ -29,7 +29,7 @@ module.exports.putOss = function(key, value) {
     if (typeof value === 'object') {
         value = JSON.stringify(value)
     }
-    return client.put(key, new Buffer(value))
+    return client.put(key, Buffer.from(value))
 }
 
 module.exports.getOss = async function(key) {

@@ -1,0 +1,25 @@
+ROSTemplateFormatVersion: '2015-09-01'
+Transform: Aliyun::Serverless-2018-04-03
+Resources:
+  order-dinner-service:
+    Type: Aliyun::Serverless::Service
+    Properties:
+      InternetAccess: true
+      Description: order dinner demo
+    order-dinner:
+      Type: Aliyun::Serverless::Function
+      Properties:
+        Handler: src/index_serverless.handler
+        Runtime: nodejs10
+        CodeUri: ./
+        MemorySize: 128.0
+        InstanceConcurrency: 1.0
+        Timeout: 5.0
+      Events:
+        httpTrigger:
+          Type: HTTP
+          Properties:
+            AuthType: ANONYMOUS
+            Methods:
+            - POST
+            - GET

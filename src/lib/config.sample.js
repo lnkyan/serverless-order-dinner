@@ -6,4 +6,6 @@ module.exports = {
     OSS_REGION: 'oss-cn-shenzhen',
     // oss存储空间的名字
     OSS_BUCKET: 'oss-bucket-name',
+    // 钉钉机器人的webhook地址
+    DING_ROBOT: 'https://oapi.dingtalk.com/robot/send?access_token=*************'
 }

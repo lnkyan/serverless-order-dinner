@@ -70,5 +70,5 @@ typings/
 *.sw*
 
 
-/lib/config.js
+/src/lib/config.js
 *.zip

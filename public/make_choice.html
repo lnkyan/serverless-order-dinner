@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta http-equiv="content-type" content="text/html;charset=utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="renderer" content="webkit">
+    <meta content="telephone=no" name="format-detection">
+    <meta name="viewport" content="width=device-width,user-scalable=no,initial-scale=1,minimum-scale=1.0,maximum-scale=1.0">
+    <title>Make Choice</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/vant@2.2/lib/index.css">
+
+    <style type="text/css">
+        #app {
+            width: 100%;
+            padding-top: 30%;
+        }
+    </style>
+</head>
+<body>
+<script src="//cdn.jsdelivr.net/npm/vue@2.6.0"></script>
+<script src="//cdn.jsdelivr.net/npm/vant@2.2/lib/vant.min.js"></script>
+<script src="//unpkg.com/axios/dist/axios.min.js"></script>
+<script src="utils.js"></script>
+
+<div id="app" style="display: none;">
+    <template v-if="!name">
+        <label>请输入姓名 <input type="text" v-model="inputName"></label>
+        <van-button type="primary" @click="saveName">提交</van-button>
+    </template>
+    <template v-else>
+        <p>已点餐：
+            <span v-for="item in menu.agreeList" :key="item">{{item}} </span>
+        </p>
+        <p>已放弃：
+            <span v-for="item in menu.disagreeList" :key="item">{{item}} </span>
+        </p>
+    </template>
+</div>
+<script type="text/javascript">
+    const NAME_KEY = 'order_dinner_name'
+
+    new Vue({
+        el: '#app',
+        data() {
+            const name = localStorage.getItem(NAME_KEY)
+            return {
+                isAgree: getUrlParam('agree') === '1',
+                menuId: getUrlParam('menuId'),
+                name,
+                inputName: '',
+                menu: {},
+            }
+        },
+        methods: {
+            async fetchTodayMenu() {
+                try {
+                    this.menu = await get('api/show')
+                } catch (e) {
+                    console.warn('拉取点餐结果失败')
+                }
+            },
+            async saveName() {
+                localStorage.setItem(NAME_KEY, this.inputName)
+                this.name = this.inputName
+                await this.makeChoice()
+                await this.fetchTodayMenu()
+            },
+            async makeChoice() {
+                try {
+                    await post(this.isAgree ? 'api/agree' : 'api/disagree', {
+                        menuId: this.menuId,
+                        name: this.name,
+                    })
+                    vant.Toast.success('操作成功')
+                } catch (e) {
+                    vant.Toast.success(`操作失败: ${e.message}`)
+                }
+            },
+        },
+        async mounted() {
+            this.$el.style.display = 'block'
+            if (this.name) {
+                await this.makeChoice()
+                await this.fetchTodayMenu()
+            }
+        },
+    })
+</script>
+</body>
+</html>

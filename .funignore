@@ -1,0 +1,13 @@
+.env
+package-lock.json
+yarn.lock
+template.yml
+.funignore
+
+.eslintrc.js
+.gitignore
+LICENSE
+README.md
+
+.idea
+test

@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta http-equiv="content-type" content="text/html;charset=utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="renderer" content="webkit">
+    <meta content="telephone=no" name="format-detection">
+    <meta name="viewport" content="width=device-width,user-scalable=no,initial-scale=1,minimum-scale=1.0,maximum-scale=1.0">
+    <title>Order Dinner</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/vant@2.2/lib/index.css">
+
+    <style type="text/css">
+        .loading-page {
+            display: flex;
+            height: 100vh;
+            width: 100vw;
+            align-items: center;
+            justify-content: center;
+        }
+
+        textarea {
+            width: 70%;
+        }
+    </style>
+</head>
+<body>
+<script src="//cdn.jsdelivr.net/npm/vue@2.6.0"></script>
+<script src="//cdn.jsdelivr.net/npm/vant@2.2/lib/vant.min.js"></script>
+<script src="//unpkg.com/axios/dist/axios.min.js"></script>
+<script src="utils.js"></script>
+
+<div id="app" style="display: none;">
+    <div v-if="pageName==='loading'" class="loading-page">
+        <van-loading></van-loading>
+    </div>
+
+    <div v-else-if="pageName==='init'" class="order-page">
+        <h1>创建今日菜单</h1>
+        <p><label>标题 <input type="text" v-model="inputTitle"></label></p>
+        <p><label>菜单内容 <textarea v-model="inputDescription" rows="5"></textarea></label></p>
+        <p><label>截止时间
+            <van-datetime-picker
+                v-model="inputEndAt"
+                type="time"
+                :show-toolbar="false"
+                :min-hour="13"
+                :max-hour="19"/>
+        </label></p>
+        <van-button
+            type="primary"
+            size="large"
+            :loading="submittingMenu"
+            @click="submitMenu">
+            提交
+        </van-button>
+    </div>
+
+    <div v-else class="order-page">
+        <h1>点餐情况</h1>
+        <h3>{{menu.title}}</h3>
+        <p>{{menu.description}}</p>
+        <p>截止时间：
+            <span>{{new Date(menu.endAt).toLocaleString()}}</span>
+        </p>
+        <p>已点餐：
+            <span v-for="item in menu.agreeList" :key="item">{{item}} </span>
+        </p>
+        <p>已放弃：
+            <span v-for="item in menu.disagreeList" :key="item">{{item}} </span>
+        </p>
+    </div>
+</div>
+
+<script type="text/javascript">
+    new Vue({
+        el: '#app',
+        data() {
+            return {
+                pageName: 'loading',
+                menu: {}, // title, description, endAt, agreeList, disagreeList
+                inputTitle: `${getTodayStr()}晚餐`,
+                inputDescription: '',
+                inputEndAt: '15:00',
+                submittingMenu: false,
+                noticeUrl: '',
+            }
+        },
+        computed: {
+            inputEndAtStamp() {
+                const d = new Date()
+                const [hours, minutes] = this.inputEndAt.split(':')
+                d.setHours(parseInt(hours, 10) || 0, parseInt(minutes, 10) || 0, 0, 0)
+                return d.getTime()
+            },
+        },
+        methods: {
+            async fetchTodayMenu() {
+                try {
+                    this.menu = await get('api/show')
+                    this.pageName = 'order'
+                } catch (e) {
+                    this.pageName = 'init'
+                }
+            },
+            async submitMenu() {
+                this.submittingMenu = true
+                try {
+                    this.menu = await post('api/create', {
+                        title: this.inputTitle,
+                        description: this.inputDescription,
+                        endAt: this.inputEndAtStamp,
+                    })
+                    this.pageName = 'order'
+                    vant.Toast.success('创建成功')
+                } catch (e) {
+                    vant.Toast.fail('创建失败')
+                }
+                this.submittingMenu = false
+            },
+        },
+        mounted() {
+            this.$el.style.display = 'block'
+            this.fetchTodayMenu()
+        },
+    })
+
+    /**
+     * 获取今天的日期字符串
+     * @return {string}
+     */
+    function getTodayStr() {
+        const d = new Date(Date.now() + 8 * 60 * 60 * 1000)
+        const year = d.getUTCFullYear()
+        const month = d.getUTCMonth() + 1
+        const day = d.getUTCDate()
+        return `${year}${month < 10 ? '0' : ''}${month}${day < 10 ? '0' : ''}${day}`
+    }
+</script>
+</body>
+</html>
