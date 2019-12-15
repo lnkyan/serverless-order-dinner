@@ -2,11 +2,6 @@
   "name": "serverless-order-dinner",
   "version": "1.0.0",
   "description": "",
-  "directories": {
-    "functions": "functions",
-    "lib": "src/lib",
-    "test": "test"
-  },
   "scripts": {
     "start": "node src/index_server.js",
     "deploy": "fun deploy",

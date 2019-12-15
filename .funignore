@@ -1,4 +1,5 @@
 .env
+.env.sample
 package-lock.json
 yarn.lock
 template.yml
@@ -10,4 +11,5 @@ LICENSE
 README.md
 
 .idea
+.fun
 test
