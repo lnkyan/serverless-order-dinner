@@ -1,5 +1,6 @@
 const oss = require('../lib/oss')
-const dingRobot = require('../lib/ding_robot')
+const DingRobot = require('../lib/ding_robot')
+const {DING_ROBOT_ACCESS_TOKEN} = require('../lib/config')
 
 module.exports = {
     createTodayMenu,
@@ -9,6 +10,7 @@ module.exports = {
     disagree,
 }
 
+const dingRobot = new DingRobot(DING_ROBOT_ACCESS_TOKEN)
 /**
  * 创建今天的点餐信息
  * @param {object} menuData
